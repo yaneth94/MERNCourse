@@ -21,10 +21,14 @@ notesCtrl.getNotes = async(req, res) => {
 
 notesCtrl.createNote = async(req, res) => {
     let { title, content, date, author } = req.body;
+    // change because modific the date for 1 day
+    let dateUpdate = new Date(req.body.date);
+    dateUpdate.setDate(dateUpdate.getDate() - 1);
+    console.log(dateUpdate);
     const newNote = new Note({
         title,
         content,
-        date,
+        date: dateUpdate,
         author,
     });
     try {

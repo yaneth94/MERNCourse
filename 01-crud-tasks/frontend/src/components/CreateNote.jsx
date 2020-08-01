@@ -10,9 +10,32 @@ class CreateNote extends Component {
     title: "",
     content: "",
     date: new Date(),
+    // para saber si se esta editando
+    editing: false,
+    _id: "",
   };
   componentDidMount() {
     this.getUsers();
+    let id = this.props.match.params.id;
+    if (id) {
+      this.getUser(id);
+    }
+  }
+  async getUser(id) {
+    try {
+      const res = await axios.get("http://localhost:4000/api/notes/" + id);
+      let noteReceived = res.data.note;
+      this.setState({
+        title: noteReceived.title,
+        content: noteReceived.content,
+        date: new Date(noteReceived.date),
+        userSelected: noteReceived.author,
+        _id: noteReceived._id,
+        editing: true,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
   async getUsers() {
     try {
@@ -29,20 +52,37 @@ class CreateNote extends Component {
   }
   onSubmit = (e) => {
     e.preventDefault();
-    let newNote = {
+    let note = {
       title: this.state.title,
       content: this.state.content,
       author: this.state.userSelected,
       date: this.state.date,
     };
-    this.saveNote(newNote);
-    this.cleanState();
+    if (this.state.editing) {
+      this.updateNote(note);
+    } else {
+      this.saveNote(note);
+      this.cleanState();
+    }
+    window.location.href = "/";
   };
 
-  // guardar una nota
+  // saved note
   async saveNote(newNote) {
     try {
       let res = await axios.post("http://localhost:4000/api/notes", newNote);
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  // updated note
+  async updateNote(updatedNote) {
+    try {
+      let res = await axios.put(
+        "http://localhost:4000/api/notes/" + this.state._id,
+        updatedNote
+      );
       console.log(res);
     } catch (err) {
       console.log(err);
