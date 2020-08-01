@@ -28,12 +28,12 @@ export default class Navigation extends Component {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/create" className="nav-link">
+                <Link to="/create/note" className="nav-link">
                   Create Note
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/user" className="nav-link">
+                <Link to="/create/user" className="nav-link">
                   Create User
                 </Link>
               </li>
