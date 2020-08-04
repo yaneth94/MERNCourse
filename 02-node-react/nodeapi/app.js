@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
-const mongoose = require("mongoose");
 const morgan = require("morgan");
+const bodyParser = require("body-parser");
+const expressValidator = require("express-validator");
 const dotenv = require("dotenv");
 dotenv.config();
 // require connection database
@@ -13,8 +14,13 @@ const postRoutes = require("./routes/post");
 //midlewares
 // see time of response
 app.use(morgan("dev"));
+// form body x-wwww
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(expressValidator());
 
-app.use("/", postRoutes);
+// router
+app.use("/api/post", postRoutes);
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
