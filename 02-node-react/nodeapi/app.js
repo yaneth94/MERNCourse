@@ -12,6 +12,7 @@ require("./database");
 //bring in routes
 const postRoutes = require("./routes/post");
 const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/user");
 
 //midlewares
 // see time of response
@@ -25,6 +26,17 @@ app.use(expressValidator());
 // router
 app.use("/api/post", postRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
+
+//management handling error for express-jwt
+app.use(function(err, req, res, next) {
+    if (err.name === "UnauthorizedError") {
+        res.status(401).json({
+            ok: false,
+            err: "Unauthorized",
+        });
+    }
+});
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {

@@ -29,3 +29,7 @@ Packages use
 10. [Dotenv](https://www.npmjs.com/package/dotenv)
 
 11. [Cookie-parser](https://www.npmjs.com/package/cookie-parser)
+
+12. [Express-jwt](https://www.npmjs.com/package/express-jwt) midleware for signin
+
+13. [Lodash](https://www.npmjs.com/package/lodash)
