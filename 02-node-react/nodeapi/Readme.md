@@ -33,3 +33,7 @@ Packages use
 12. [Express-jwt](https://www.npmjs.com/package/express-jwt) midleware for signin
 
 13. [Lodash](https://www.npmjs.com/package/lodash)
+
+14. [Formidable](https://www.npmjs.com/package/formidable) Upload files
+
+15. [Cors](https://www.npmjs.com/package/cors)

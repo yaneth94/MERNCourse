@@ -92,7 +92,7 @@ usersCtrl.deleteUser = (req, res, next) => {
                 error: err,
             });
         }
-        res.json({ message: "User deleted successfully" });
+        res.json({ ok:true,message: "User deleted successfully" });
     });
 };
 
