@@ -41,21 +41,21 @@ authCtrl.signin = (req, res) => {
         // if err or no user
         if (err || !user) {
             return res.status(401).json({
-                error: "User with that email does not exist. Please signup.",
+                err: "User with that email does not exist. Please signup.",
             });
         }
         // if user is found make sure the email and password match
         // create authenticate method in model and use here
         if (!user.authenticate(password)) {
             return res.status(401).json({
-                error: "Email and password do not match",
+                err: "Email and password do not match",
             });
         }
         // generate a token with user id and secret
         const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
         /* const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-                            expiresIn: process.env.EXPIRE,
-                        }); */
+                                expiresIn: process.env.EXPIRE,
+                            }); */
         // persist the token as 't' in cookie with expiry date
         res.cookie("t", token, { expire: new Date() + process.env.EXPIRE });
         // retrun response with user and token to frontend client
