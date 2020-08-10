@@ -15,7 +15,7 @@ exports.createPostValidator = (req, res, next) => {
     // if error show the fisrst one as they happen
     if (errors) {
         const firstError = errors.map((error) => error.msg)[0];
-        return res.status(400).json({ error: firstError });
+        return res.status(400).json({ err: firstError });
     }
 
     //proceed to next middleware
@@ -47,7 +47,7 @@ exports.userSignupValidator = (req, res, next) => {
     // if error show the first one as they happen
     if (errors) {
         const firstError = errors.map((error) => error.msg)[0];
-        return res.status(400).json({ error: firstError });
+        return res.status(400).json({ err: firstError });
     }
     // proceed to next middleware
     next();
