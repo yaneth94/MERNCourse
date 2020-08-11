@@ -49,13 +49,13 @@ const Menu = ({ history }) => (
       {isAuthenticated() && (
         <>
           <li className="nav-item">
-            <a
+            <span
               className="nav-link"
               style={{ cursor: "pointer", color: "#fff" }}
               onClick={() => signout(() => history.push("/"))}
             >
               Sign Out
-            </a>
+            </span>
           </li>
           <li className="nav-item">
             <Link
