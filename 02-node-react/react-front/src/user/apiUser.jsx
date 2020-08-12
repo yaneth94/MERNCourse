@@ -55,3 +55,14 @@ export const updateUser = (userId, token, user) => {
     })
     .catch((err) => console.log(err));
 };
+
+export const updateUserAutenticated = (user, next) => {
+  if (typeof window !== "undefined") {
+    if (localStorage.getItem("jwt")) {
+      let auth = JSON.parse(localStorage.getItem("jwt"));
+      auth.user = user;
+      localStorage.setItem("jwt", JSON.stringify(auth));
+      next();
+    }
+  }
+};
