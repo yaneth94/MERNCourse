@@ -30,6 +30,10 @@ const userSchema = new Schema({
         data: Buffer,
         contentType: String,
     },
+    about: {
+        type: String,
+        trim: true,
+    },
 });
 
 /**
