@@ -7,13 +7,14 @@ const User = require("../models/User.js");
 const fs = require("fs");
 
 const formidable = require("formidable");
+const { result } = require("lodash");
 
 // you need because have the information at user that login user
 usersCtrl.userById = (req, res, next, id) => {
     User.findById(id)
         // populate followers and following users array
-        //.populate("following", "_id name")
-        //.populate("followers", "_id name")
+        .populate("following", "_id name")
+        .populate("followers", "_id name")
         .exec((err, user) => {
             if (err || !user) {
                 return res.status(400).json({
@@ -126,7 +127,7 @@ usersCtrl.deleteUser = (req, res, next) => {
     user.remove((err, user) => {
         if (err) {
             return res.status(400).json({
-                error: err,
+                err: err,
             });
         }
         res.json({ ok: true, message: "User deleted successfully" });
@@ -139,6 +140,74 @@ usersCtrl.userPhoto = (req, res, next) => {
         return res.send(req.profile.photo.data);
     }
     next();
+};
+
+// follow unfollow
+usersCtrl.addFollowing = (req, res, next) => {
+    User.findByIdAndUpdate(
+        req.body.userId, {
+            $push: { following: req.body.followId },
+        },
+        (err, result) => {
+            if (err) {
+                return res.status(400).json({
+                    err,
+                });
+            }
+            next();
+        }
+    );
+};
+
+usersCtrl.addFollower = (req, res) => {
+    User.findByIdAndUpdate(
+            req.body.followId, {
+                $push: { followers: req.body.userId },
+            }, { new: true }
+        )
+        .populate("following", "_id name")
+        .populate("followers", "_id name")
+        .exec((err, result) => {
+            if (err) {
+                return res.status(400).json({
+                    err,
+                });
+            }
+            result.hashed_password = undefined;
+            result.salt = undefined;
+            res.json(result);
+        });
+};
+
+// remove follow unfollow
+usersCtrl.removeFollowing = (req, res, next) => {
+    User.findByIdAndUpdate(
+        req.body.userId, { $pull: { following: req.body.unfollowId } },
+        (err, result) => {
+            if (err) {
+                return res.status(400).json({ err });
+            }
+            next();
+        }
+    );
+};
+
+usersCtrl.removeFollower = (req, res) => {
+    User.findByIdAndUpdate(
+            req.body.unfollowId, { $pull: { followers: req.body.userId } }, { new: true }
+        )
+        .populate("following", "_id name")
+        .populate("followers", "_id name")
+        .exec((err, result) => {
+            if (err) {
+                return res.status(400).json({
+                    err,
+                });
+            }
+            result.hashed_password = undefined;
+            result.salt = undefined;
+            res.json(result);
+        });
 };
 
 module.exports = usersCtrl;

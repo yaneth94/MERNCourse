@@ -1,5 +1,7 @@
 const { Schema, model } = require("mongoose");
 
+const { ObjectId } = Schema;
+
 const crypto = require("crypto");
 
 let uuidv1 = require("uuidv1");
@@ -34,6 +36,8 @@ const userSchema = new Schema({
         type: String,
         trim: true,
     },
+    following: [{ type: ObjectId, ref: "User" }],
+    followers: [{ type: ObjectId, ref: "User" }],
 });
 
 /**
