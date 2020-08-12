@@ -39,14 +39,16 @@ export const removeUser = (userId, token) => {
 };
 
 export const updateUser = (userId, token, user) => {
+  console.log("USER DATA", user);
   return fetch(`${process.env.REACT_APP_API_URL}/api/user/${userId}`, {
     method: "PUT",
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json",
+      //"Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(user),
+    // body: JSON.stringify(user), antes de implementar el form
+    body: user,
   })
     .then((response) => {
       return response.json();

@@ -36,7 +36,7 @@ postsCtrl.createPost = (req, res, next) => {
     form.parse(req, (err, fields, files) => {
         if (err) {
             return res.status(400).json({
-                error: "Image could not be uploaded",
+                err: "Image could not be uploaded",
             });
         }
         let post = new Post(fields);
@@ -53,7 +53,7 @@ postsCtrl.createPost = (req, res, next) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
-                    error: err,
+                    err,
                 });
             }
             res.json({
@@ -63,22 +63,22 @@ postsCtrl.createPost = (req, res, next) => {
         });
     });
     /*
-                                                                                            // arreglo de propiedades validas
-                                                                                            let body = _.pick(req.body, ["title", "body"]);
-                                                                                            const newPost = Post(body);
-                                                                                            try {
-                                                                                                let post = await newPost.save();
-                                                                                                res.json({
-                                                                                                    ok: true,
-                                                                                                    post,
-                                                                                                    message: "Post save correctly",
-                                                                                                });
-                                                                                            } catch (err) {
-                                                                                                return res.status(400).json({
-                                                                                                    ok: false,
-                                                                                                    err,
-                                                                                                });
-                                                                                            }*/
+                                                                                                // arreglo de propiedades validas
+                                                                                                let body = _.pick(req.body, ["title", "body"]);
+                                                                                                const newPost = Post(body);
+                                                                                                try {
+                                                                                                    let post = await newPost.save();
+                                                                                                    res.json({
+                                                                                                        ok: true,
+                                                                                                        post,
+                                                                                                        message: "Post save correctly",
+                                                                                                    });
+                                                                                                } catch (err) {
+                                                                                                    return res.status(400).json({
+                                                                                                        ok: false,
+                                                                                                        err,
+                                                                                                    });
+                                                                                                }*/
 };
 
 postsCtrl.postsByUser = (req, res) => {
@@ -89,7 +89,7 @@ postsCtrl.postsByUser = (req, res) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
-                    error: err,
+                    err,
                 });
             }
             res.json({
@@ -140,7 +140,7 @@ postsCtrl.deletePost = (req, res) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
-                error: err,
+                err,
             });
         }
         res.json({
@@ -155,7 +155,7 @@ postsCtrl.updatePost = (req, res, next) => {
     form.parse(req, (err, fields, files) => {
         if (err) {
             return res.status(400).json({
-                error: "Photo could not be uploaded",
+                err: "Photo could not be uploaded",
             });
         }
         // save post
@@ -171,7 +171,7 @@ postsCtrl.updatePost = (req, res, next) => {
         post.save((err) => {
             if (err) {
                 return res.status(400).json({
-                    error: err,
+                    err,
                 });
             }
             res.json(post);

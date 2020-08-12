@@ -47,6 +47,11 @@ class Profile extends Component {
   render() {
     const { user, redirectToSignin } = this.state;
     if (redirectToSignin) return <Redirect to="/signin"></Redirect>;
+    const photoUrl = user._id
+      ? `${process.env.REACT_APP_API_URL}/api/user/photo/${
+          user._id
+        }?${new Date().getTime()}`
+      : `${DefaultProfile} `;
     return (
       <div className="container">
         <h2 className="mt-5 mb-5">Profile</h2>
@@ -55,7 +60,7 @@ class Profile extends Component {
             <img
               style={{ height: "15vw", width: "100%", objectFit: "cover" }}
               className="img-thumbnail"
-              src={`${DefaultProfile}`}
+              src={`${photoUrl}`}
               onError={(i) => (i.target.src = `${DefaultProfile}`)}
               alt={user.name}
             />

@@ -40,7 +40,10 @@ class Users extends Component {
           <img
             style={{ height: "200px", width: "auto" }}
             className="img-thumbnail"
-            src={`${DefaultProfile}`}
+            src={`${process.env.REACT_APP_API_URL}/api/user/photo/${
+              user._id
+            }?${new Date().getTime()}`}
+            //src={`${DefaultProfile}`}
             onError={(i) => (i.target.src = `${DefaultProfile}`)}
             alt={user.name}
           />

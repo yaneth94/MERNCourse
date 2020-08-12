@@ -4,6 +4,10 @@ const _ = require("lodash");
 
 const User = require("../models/User.js");
 
+const fs = require("fs");
+
+const formidable = require("formidable");
+
 // you need because have the information at user that login user
 usersCtrl.userById = (req, res, next, id) => {
     User.findById(id)
@@ -60,7 +64,7 @@ usersCtrl.getUser = (req, res) => {
     req.profile.salt = undefined;
     return res.json(req.profile);
 };
-
+/*
 usersCtrl.updateUser = (req, res, next) => {
     // save user
     let user = req.profile;
@@ -83,6 +87,39 @@ usersCtrl.updateUser = (req, res, next) => {
         });
     });
 };
+*/
+
+usersCtrl.updateUser = (req, res, next) => {
+    let form = new formidable.IncomingForm();
+    form.keepExtensions = true;
+    form.parse(req, (err, fields, files) => {
+        if (err) {
+            return res.status(400).json({
+                err: "Photo could not be uploaded",
+            });
+        }
+        // save user
+        let user = req.profile;
+        user = _.extend(user, fields);
+        user.updated = Date.now();
+
+        if (files.photo) {
+            user.photo.data = fs.readFileSync(files.photo.path);
+            user.photo.contentType = files.photo.type;
+        }
+
+        user.save((err) => {
+            if (err) {
+                return res.status(400).json({
+                    err,
+                });
+            }
+            user.hashed_password = undefined;
+            user.salt = undefined;
+            res.json(user);
+        });
+    });
+};
 
 usersCtrl.deleteUser = (req, res, next) => {
     let user = req.profile;
@@ -92,8 +129,16 @@ usersCtrl.deleteUser = (req, res, next) => {
                 error: err,
             });
         }
-        res.json({ ok:true,message: "User deleted successfully" });
+        res.json({ ok: true, message: "User deleted successfully" });
     });
+};
+
+usersCtrl.userPhoto = (req, res, next) => {
+    if (req.profile.photo.data) {
+        res.set("Content-Type", req.profile.photo.contentType);
+        return res.send(req.profile.photo.data);
+    }
+    next();
 };
 
 module.exports = usersCtrl;

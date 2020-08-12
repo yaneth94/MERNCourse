@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { isAuthenticated } from "../auth";
 import { readUser, updateUser } from "./apiUser";
+import DefaultProfile from "../images/avatar.jpg";
 
 class EditProfile extends Component {
   constructor(props) {
@@ -13,6 +14,8 @@ class EditProfile extends Component {
       password: "",
       redirectToProfile: false,
       error: "",
+      fileSize: 0,
+      loading: false,
     };
   }
   init = (userId) => {
@@ -35,12 +38,21 @@ class EditProfile extends Component {
       .catch((err) => console.log(err));
   };
   componentDidMount() {
+    //use of formdata
+    this.userData = new FormData();
     const userId = this.props.match.params.userId;
     this.init(userId);
   }
 
   isValid = () => {
-    const { name, email, password } = this.state;
+    const { name, email, password, fileSize } = this.state;
+    if (fileSize > 1000000) {
+      this.setState({
+        error: "File size should be less than 100kb",
+        loading: false,
+      });
+      return false;
+    }
     if (name.length === 0) {
       this.setState({ error: "Name is required" });
       return false;
@@ -62,24 +74,27 @@ class EditProfile extends Component {
   };
 
   handleChangeInput = (e) => {
+    this.setState({ error: "" });
+    const name = e.target.name;
+    const value = name === "photo" ? e.target.files[0] : e.target.value;
+    const fileSize = name === "photo" ? e.target.files[0].size : 0;
+    // uso form data
+    this.userData.set(name, value);
     this.setState({
-      [e.target.name]: e.target.value,
+      [e.target.name]: value,
+      fileSize,
     });
   };
   clickSubmit = (e) => {
     e.preventDefault();
+    this.setState({ loading: true });
+
     if (this.isValid()) {
       const { name, email, password } = this.state;
-      const user = {
-        name,
-        email,
-        // para poder guardar sin necesidad del password
-        password: password || undefined,
-      };
       const userId = this.props.match.params.userId;
       const token = isAuthenticated().token;
-
-      updateUser(userId, token, user).then((data) => {
+      //mandando los datos del formulario para que admita archivos
+      updateUser(userId, token, this.userData).then((data) => {
         if (data.err) {
           this.setState({ error: data.err });
         } else {
@@ -93,6 +108,17 @@ class EditProfile extends Component {
   signupForm = (name, email, password) => {
     return (
       <form>
+        <div className="form-group">
+          <label className="text-muted">Profile Photo</label>
+          <input
+            //onChange={this.handleChange("photo")}
+            onChange={this.handleChangeInput}
+            type="file"
+            accept="image/*"
+            name="photo"
+            className="form-control"
+          />
+        </div>
         <div className="form-group">
           <label className="text-muted">Name</label>
           <input
@@ -136,10 +162,24 @@ class EditProfile extends Component {
     );
   };
   render() {
-    const { id, name, email, password, redirectToProfile, error } = this.state;
+    const {
+      id,
+      name,
+      email,
+      password,
+      redirectToProfile,
+      error,
+      loading,
+    } = this.state;
     if (redirectToProfile) {
       return <Redirect to={`/user/${id}`} />;
     }
+
+    const photoUrl = id
+      ? `${
+          process.env.REACT_APP_API_URL
+        }/api/user/photo/${id}?${new Date().getTime()}`
+      : `${DefaultProfile} `;
     return (
       <div className="container">
         <h2 className="mt-5 mb-5">Edit Profile</h2>
@@ -149,6 +189,21 @@ class EditProfile extends Component {
         >
           {error}
         </div>
+
+        {loading ? (
+          <div className="jumbotron text-center">
+            <h2>Loading...</h2>
+          </div>
+        ) : (
+          ""
+        )}
+        <img
+          style={{ height: "200px", width: "auto" }}
+          className="img-thumbnail"
+          src={photoUrl}
+          onError={(i) => (i.target.src = `${DefaultProfile}`)}
+          alt={name}
+        />
         {this.signupForm(name, email, password)}
       </div>
     );
