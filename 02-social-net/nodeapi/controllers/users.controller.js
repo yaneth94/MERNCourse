@@ -144,6 +144,7 @@ usersCtrl.userPhoto = (req, res, next) => {
 
 // follow unfollow
 usersCtrl.addFollowing = (req, res, next) => {
+    console.log(req.body);
     User.findByIdAndUpdate(
         req.body.userId, {
             $push: { following: req.body.followId },
