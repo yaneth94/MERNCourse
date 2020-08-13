@@ -9,6 +9,7 @@ import Users from "./user/Users";
 import EditProfile from "./user/EditProfile";
 // agregando la autenticacion obligatoria
 import PrivateRoute from "./auth/PrivateRoute";
+import FindPeople from "./user/FindPeople";
 
 function MainRouter() {
   return (
@@ -27,6 +28,11 @@ function MainRouter() {
           path="/user/:userId"
           exact
           component={Profile}
+        ></PrivateRoute>
+        <PrivateRoute
+          path="/findpeople"
+          exact
+          component={FindPeople}
         ></PrivateRoute>
         <Route path="/users" exact component={Users}></Route>
       </Switch>

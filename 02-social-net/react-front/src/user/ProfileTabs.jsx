@@ -77,6 +77,10 @@ class ProfileTabs extends Component {
               );
             })}
           </div>
+          <div className="col-md-4">
+            <h3 className="text-primary"> Posts</h3>
+            <hr />
+          </div>
         </div>
       </>
     );

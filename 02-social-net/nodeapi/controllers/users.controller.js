@@ -211,4 +211,27 @@ usersCtrl.removeFollower = (req, res) => {
         });
 };
 
+/**
+ *
+ * selects the documents where:
+ * the field value is not in the specified array or
+ * the field does not exist.
+ */
+
+usersCtrl.findPeople = (req, res) => {
+    let following = req.profile.following;
+    following.push(req.profile._id);
+    User.find({ _id: { $nin: following } }, (err, users) => {
+        if (err) {
+            return res.status(400).json({
+                err,
+            });
+        }
+        res.json({
+            ok: true,
+            users,
+        });
+    }).select("name");
+};
+
 module.exports = usersCtrl;
