@@ -17,7 +17,7 @@ const postSchema = new Schema({
         //maxlength: 2000,
     },
     photo: {
-        type: Buffer,
+        data: Buffer,
         contenType: String,
     },
     postedBy: {

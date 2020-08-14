@@ -7,9 +7,10 @@ import Signin from "./user/Signin";
 import Profile from "./user/Profile";
 import Users from "./user/Users";
 import EditProfile from "./user/EditProfile";
+import FindPeople from "./user/FindPeople";
+import NewPost from "./post/NewPost";
 // agregando la autenticacion obligatoria
 import PrivateRoute from "./auth/PrivateRoute";
-import FindPeople from "./user/FindPeople";
 
 function MainRouter() {
   return (
@@ -19,6 +20,7 @@ function MainRouter() {
         <Route path="/" exact component={Home}></Route>
         <Route path="/signup" exact component={Signup}></Route>
         <Route path="/signin" exact component={Signin}></Route>
+        <Route path="/users" exact component={Users}></Route>
         <PrivateRoute
           path="/user/edit/:userId"
           exact
@@ -34,7 +36,11 @@ function MainRouter() {
           exact
           component={FindPeople}
         ></PrivateRoute>
-        <Route path="/users" exact component={Users}></Route>
+        <PrivateRoute
+          path="/post/create"
+          exact
+          component={NewPost}
+        ></PrivateRoute>
       </Switch>
     </div>
   );
