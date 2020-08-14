@@ -36,6 +36,7 @@ function MainRouter() {
           exact
           component={FindPeople}
         ></PrivateRoute>
+
         <PrivateRoute
           path="/post/create"
           exact

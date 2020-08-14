@@ -57,7 +57,6 @@ const Menu = ({ history }) => (
               Find People
             </Link>
           </li>
-
           <li className="nav-item">
             <Link
               to={`/post/create`}

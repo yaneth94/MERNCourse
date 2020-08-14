@@ -15,7 +15,8 @@ postsCtrl.getPosts = async(req, res) => {
         const posts = await Post.find()
             // name property and attributes
             .populate("postedBy", "_id name")
-            .select("_id title body"); // {},{}
+            .select("_id title body created") // {},{}
+            .sort({ created: -1 });
         res.json({
             ok: true,
             posts,
@@ -63,22 +64,22 @@ postsCtrl.createPost = (req, res, next) => {
         });
     });
     /*
-                                                                                                // arreglo de propiedades validas
-                                                                                                let body = _.pick(req.body, ["title", "body"]);
-                                                                                                const newPost = Post(body);
-                                                                                                try {
-                                                                                                    let post = await newPost.save();
-                                                                                                    res.json({
-                                                                                                        ok: true,
-                                                                                                        post,
-                                                                                                        message: "Post save correctly",
-                                                                                                    });
-                                                                                                } catch (err) {
-                                                                                                    return res.status(400).json({
-                                                                                                        ok: false,
-                                                                                                        err,
-                                                                                                    });
-                                                                                                }*/
+                                                                                                      // arreglo de propiedades validas
+                                                                                                      let body = _.pick(req.body, ["title", "body"]);
+                                                                                                      const newPost = Post(body);
+                                                                                                      try {
+                                                                                                          let post = await newPost.save();
+                                                                                                          res.json({
+                                                                                                              ok: true,
+                                                                                                              post,
+                                                                                                              message: "Post save correctly",
+                                                                                                          });
+                                                                                                      } catch (err) {
+                                                                                                          return res.status(400).json({
+                                                                                                              ok: false,
+                                                                                                              err,
+                                                                                                          });
+                                                                                                      }*/
 };
 
 postsCtrl.postsByUser = (req, res) => {
