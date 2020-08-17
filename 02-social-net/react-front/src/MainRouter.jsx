@@ -11,6 +11,7 @@ import FindPeople from "./user/FindPeople";
 import NewPost from "./post/NewPost";
 // agregando la autenticacion obligatoria
 import PrivateRoute from "./auth/PrivateRoute";
+import SinglePost from "./post/SinglePost";
 
 function MainRouter() {
   return (
@@ -41,6 +42,11 @@ function MainRouter() {
           path="/post/create"
           exact
           component={NewPost}
+        ></PrivateRoute>
+        <PrivateRoute
+          path="/post/:postId"
+          exact
+          component={SinglePost}
         ></PrivateRoute>
       </Switch>
     </div>

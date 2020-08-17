@@ -18,7 +18,7 @@ const postSchema = new Schema({
     },
     photo: {
         data: Buffer,
-        contenType: String,
+        contentType: String,
     },
     postedBy: {
         type: ObjectId,

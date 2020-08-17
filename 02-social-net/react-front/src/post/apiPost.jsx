@@ -22,3 +22,13 @@ export const listPost = () => {
     })
     .catch((err) => console.log(err));
 };
+
+export const singlePost = (postId) => {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/post/by/${postId}`, {
+    method: "GET",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};

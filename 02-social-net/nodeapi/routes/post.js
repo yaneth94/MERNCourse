@@ -7,6 +7,8 @@ const {
     deletePost,
     isPoster,
     updatePost,
+    postPhoto,
+    singlePost,
 } = require("../controllers/posts.controller");
 const { requireSignin } = require("../controllers/auth.controller");
 const { userById } = require("../controllers/users.controller");
@@ -22,13 +24,17 @@ router
 
 router.route("/:userId").post(requireSignin, createPost, createPostValidator);
 
-router.route("/by/:userId").get(requireSignin, postsByUser);
-
 router
     .route("/by/:postId")
+    .get(singlePost)
     .delete(requireSignin, isPoster, deletePost)
     .put(requireSignin, isPoster, updatePost)
     .put(requireSignin, isPoster, updatePost);
+
+router.route("/user/:userId").get(requireSignin, postsByUser);
+
+// route get photo
+router.route("/photo/:postId").get(postPhoto);
 
 // any route containing: userId, our app will first execute userById
 router.param("userId", userById);
