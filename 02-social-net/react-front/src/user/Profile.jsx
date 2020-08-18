@@ -6,6 +6,7 @@ import { Redirect, Link } from "react-router-dom";
 import DeleteUser from "./DeleteUser";
 import FollowProfileButton from "./FollowProfileButton";
 import ProfileTabs from "./ProfileTabs";
+import { listPostUser } from "../post/apiPost";
 
 class Profile extends Component {
   constructor() {
@@ -15,6 +16,7 @@ class Profile extends Component {
       redirectToSignin: false,
       error: "",
       following: false,
+      posts: [],
     };
   }
 
@@ -58,6 +60,22 @@ class Profile extends Component {
             user: data,
             following,
           });
+          this.loadPost(data._id);
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+  loadPost = (userId) => {
+    return listPostUser(userId, isAuthenticated().token)
+      .then((data) => {
+        if (data.err) {
+          this.setState({
+            redirectToSignin: true,
+          });
+        } else {
+          this.setState({
+            posts: data.posts,
+          });
         }
       })
       .catch((err) => console.log(err));
@@ -77,7 +95,7 @@ class Profile extends Component {
   }
 
   render() {
-    const { user, redirectToSignin, following } = this.state;
+    const { user, redirectToSignin, following, posts } = this.state;
     if (redirectToSignin) return <Redirect to="/signin"></Redirect>;
     const photoUrl = user._id
       ? `${process.env.REACT_APP_API_URL}/api/user/photo/${
@@ -108,6 +126,12 @@ class Profile extends Component {
             isAuthenticated().user._id === user._id ? (
               <div className="d-inline-block">
                 <Link
+                  className="btn btn-raised btn-info mr-5"
+                  to={`/post/create`}
+                >
+                  Create Post
+                </Link>
+                <Link
                   className="btn btn-raised btn-success mr-5"
                   to={`/user/edit/${user._id}`}
                 >
@@ -126,11 +150,12 @@ class Profile extends Component {
         <div className="row">
           <div className="col-md-12 mt-5 mb-5">
             <hr />
-            <p className="lead">About {user.about}</p>
+            <p className="lead"> {user.about}</p>
             <hr />
             <ProfileTabs
               followers={user.followers}
               following={user.following}
+              posts={posts}
             />
           </div>
         </div>
