@@ -1,32 +1,47 @@
 import React, { Component } from "react";
-import { Redirect } from "react-router-dom";
+import { singlePost, updatePost } from "./apiPost";
 import { isAuthenticated } from "../auth";
-import { createPost } from "./apiPost";
+import { Redirect } from "react-router-dom";
+import DefaultPost from "../images/mountains.jpg";
 
-class NewPost extends Component {
-  constructor(props) {
-    super(props);
+class EditPost extends Component {
+  constructor() {
+    super();
     this.state = {
+      id: "",
       title: "",
       body: "",
+      redirectToProfile: false,
       error: "",
-      user: {},
       fileSize: 0,
       loading: false,
-      redirectToProfile: false,
     };
   }
-  componentDidMount() {
-    //use of formdata
-    this.postData = new FormData();
-    this.setState({
-      user: isAuthenticated().user,
+
+  init = (postId) => {
+    singlePost(postId).then((data) => {
+      if (data.err) {
+        this.setState({ redirectToProfile: true });
+      } else {
+        this.setState({
+          id: data.postedBy._id,
+          title: data.title,
+          body: data.body,
+          error: "",
+        });
+      }
     });
+  };
+
+  componentDidMount() {
+    this.postData = new FormData();
+    const postId = this.props.match.params.postId;
+    this.init(postId);
   }
 
   isValid = () => {
     const { title, body, fileSize } = this.state;
-    if (fileSize > 100000) {
+    if (fileSize > 1000000) {
       this.setState({
         error: "File size should be less than 100kb",
         loading: false,
@@ -40,50 +55,44 @@ class NewPost extends Component {
     return true;
   };
 
-  handleChangeInput = (e) => {
+  handleChange = (name) => (event) => {
     this.setState({ error: "" });
-    const name = e.target.name;
-    const value = name === "photo" ? e.target.files[0] : e.target.value;
-    const fileSize = name === "photo" ? e.target.files[0].size : 0;
-    // uso form data
+    const value = name === "photo" ? event.target.files[0] : event.target.value;
+
+    const fileSize = name === "photo" ? event.target.files[0].size : 0;
     this.postData.set(name, value);
-    this.setState({
-      [e.target.name]: value,
-      fileSize,
-    });
+    this.setState({ [name]: value, fileSize });
   };
-  clickSubmit = (e) => {
-    e.preventDefault();
+
+  clickSubmit = (event) => {
+    event.preventDefault();
     this.setState({ loading: true });
 
     if (this.isValid()) {
-      const userId = isAuthenticated().user._id;
+      const postId = this.props.match.params.postId;
       const token = isAuthenticated().token;
-      //mandando los datos del formulario para que admita archivos
-      createPost(userId, token, this.postData).then((data) => {
-        if (data.err) {
-          this.setState({ error: data.err });
-        } else {
+
+      updatePost(postId, token, this.postData).then((data) => {
+        if (data.err) this.setState({ error: data.err });
+        else {
           this.setState({
             loading: false,
             title: "",
             body: "",
-            photo: "",
             redirectToProfile: true,
           });
         }
       });
     }
   };
-  newPostForm = (title, body) => (
+
+  editPostForm = (title, body) => (
     <form>
       <div className="form-group">
         <label className="text-muted">Post Photo</label>
         <input
-          //onChange={this.handleChange("photo")}
+          onChange={this.handleChange("photo")}
           type="file"
-          name="photo"
-          onChange={this.handleChangeInput}
           accept="image/*"
           className="form-control"
         />
@@ -91,11 +100,9 @@ class NewPost extends Component {
       <div className="form-group">
         <label className="text-muted">Title</label>
         <input
-          //onChange={this.handleChange("title")}
+          onChange={this.handleChange("title")}
           type="text"
           className="form-control"
-          name="title"
-          onChange={this.handleChangeInput}
           value={title}
         />
       </div>
@@ -103,29 +110,30 @@ class NewPost extends Component {
       <div className="form-group">
         <label className="text-muted">Body</label>
         <textarea
-          //onChange={this.handleChange("body")}
+          onChange={this.handleChange("body")}
           type="text"
           className="form-control"
-          name="body"
-          onChange={this.handleChangeInput}
           value={body}
         />
       </div>
 
       <button onClick={this.clickSubmit} className="btn btn-raised btn-primary">
-        Create Post
+        Update Post
       </button>
     </form>
   );
+
   render() {
-    const { title, body, user, error, loading, redirectToProfile } = this.state;
+    const { id, title, body, redirectToProfile, error, loading } = this.state;
 
     if (redirectToProfile) {
-      return <Redirect to={`/user/${user._id}`} />;
+      return <Redirect to={`/user/${isAuthenticated().user._id}`} />;
     }
+
     return (
       <div className="container">
-        <h2 className="mt-5 mb-5">Create a new post</h2>
+        <h2 className="mt-5 mb-5">{title}</h2>
+
         <div
           className="alert alert-danger"
           style={{ display: error ? "" : "none" }}
@@ -141,10 +149,23 @@ class NewPost extends Component {
           ""
         )}
 
-        {this.newPostForm(title, body)}
+        <img
+          style={{ height: "200px", width: "auto" }}
+          className="img-thumbnail"
+          src={`${
+            process.env.REACT_APP_API_URL
+          }/api/post/photo/${id}?${new Date().getTime()}`}
+          onError={(i) => (i.target.src = `${DefaultPost}`)}
+          alt={title}
+        />
+
+        {isAuthenticated().user.role === "admin" &&
+          this.editPostForm(title, body)}
+
+        {isAuthenticated().user._id === id && this.editPostForm(title, body)}
       </div>
     );
   }
 }
 
-export default NewPost;
+export default EditPost;

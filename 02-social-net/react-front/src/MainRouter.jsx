@@ -12,6 +12,7 @@ import NewPost from "./post/NewPost";
 // agregando la autenticacion obligatoria
 import PrivateRoute from "./auth/PrivateRoute";
 import SinglePost from "./post/SinglePost";
+import EditPost from "./post/EditPost";
 
 function MainRouter() {
   return (
@@ -42,6 +43,11 @@ function MainRouter() {
           path="/post/create"
           exact
           component={NewPost}
+        ></PrivateRoute>
+        <PrivateRoute
+          path="/post/update/:postId"
+          exact
+          component={EditPost}
         ></PrivateRoute>
         <PrivateRoute
           path="/post/:postId"
