@@ -9,6 +9,8 @@ const {
     updatePost,
     postPhoto,
     singlePost,
+    like,
+    unlike,
 } = require("../controllers/posts.controller");
 const { requireSignin } = require("../controllers/auth.controller");
 const { userById } = require("../controllers/users.controller");
@@ -21,6 +23,9 @@ router
     //.get(requireSignin, getPosts)
     .get(getPosts);
 //.post(requireSignin, createPostValidator, createPost);
+
+router.route("/like").put(requireSignin, like);
+router.route("/unlike").put(requireSignin, unlike);
 
 router.route("/:userId").post(requireSignin, createPost, createPostValidator);
 

@@ -29,6 +29,7 @@ const postSchema = new Schema({
         default: Date.now,
     },
     updated: Date,
+    likes: [{ type: ObjectId, ref: "User" }],
 });
 
 module.exports = model("Post", postSchema);

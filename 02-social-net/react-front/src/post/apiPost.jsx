@@ -79,3 +79,37 @@ export const updatePost = (postId, token, post) => {
     })
     .catch((err) => console.log(err));
 };
+
+export const like = (userId, token, postId) => {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/post/like`, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    // body: JSON.stringify(user), antes de implementar el form
+    body: JSON.stringify({ userId, postId }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const unlike = (userId, token, postId) => {
+  return fetch(`${process.env.REACT_APP_API_URL}/api/post/unlike`, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    // body: JSON.stringify(user), antes de implementar el form
+    body: JSON.stringify({ userId, postId }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
