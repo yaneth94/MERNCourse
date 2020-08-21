@@ -3,6 +3,7 @@ import { singlePost, removePost, like, unlike } from "./apiPost";
 import DefaultPost from "../images/mountains.jpg";
 import { Link, Redirect } from "react-router-dom";
 import { isAuthenticated } from "../auth";
+import Comment from "./Comment";
 
 class SinglePost extends Component {
   constructor(props) {
@@ -14,6 +15,7 @@ class SinglePost extends Component {
       redirectToSignin: false,
       like: false,
       likes: 0,
+      comments: [],
     };
   }
 
@@ -34,10 +36,16 @@ class SinglePost extends Component {
           userPost: data.postedBy._id,
           likes: data.likes.length,
           like: this.checkLike(data.likes),
+          comments: data.comments,
         });
       }
     });
   };
+
+  updateComments = (comments) => {
+    this.setState({ comments });
+  };
+
   deletePost = () => {
     const postId = this.props.match.params.postId;
     const token = isAuthenticated().token;
@@ -150,7 +158,7 @@ class SinglePost extends Component {
   };
 
   render() {
-    const { post, redirectToHome, redirectToSignin } = this.state;
+    const { post, redirectToHome, redirectToSignin, comments } = this.state;
 
     if (redirectToHome) {
       return <Redirect to={`/`} />;
@@ -169,6 +177,11 @@ class SinglePost extends Component {
             <h2>Loading...</h2>
           </div>
         )}
+        <Comment
+          postId={post._id}
+          comments={comments.reverse()}
+          updateComments={this.updateComments}
+        />
       </div>
     );
   }

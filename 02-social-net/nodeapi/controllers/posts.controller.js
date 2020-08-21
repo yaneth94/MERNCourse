@@ -15,6 +15,8 @@ postsCtrl.getPosts = async(req, res) => {
         const posts = await Post.find()
             // name property and attributes
             .populate("postedBy", "_id name")
+            .populate("comments", "text created")
+            .populate("comments.postedBy", "_id name")
             .select("_id title body created likes") // {},{}
             .sort({ created: -1 });
         res.json({
@@ -64,28 +66,30 @@ postsCtrl.createPost = (req, res, next) => {
         });
     });
     /*
-                                                                                                                                  // arreglo de propiedades validas
-                                                                                                                                  let body = _.pick(req.body, ["title", "body"]);
-                                                                                                                                  const newPost = Post(body);
-                                                                                                                                  try {
-                                                                                                                                      let post = await newPost.save();
-                                                                                                                                      res.json({
-                                                                                                                                          ok: true,
-                                                                                                                                          post,
-                                                                                                                                          message: "Post save correctly",
-                                                                                                                                      });
-                                                                                                                                  } catch (err) {
-                                                                                                                                      return res.status(400).json({
-                                                                                                                                          ok: false,
-                                                                                                                                          err,
-                                                                                                                                      });
-                                                                                                                                  }*/
+                                                                                                                                                    // arreglo de propiedades validas
+                                                                                                                                                    let body = _.pick(req.body, ["title", "body"]);
+                                                                                                                                                    const newPost = Post(body);
+                                                                                                                                                    try {
+                                                                                                                                                        let post = await newPost.save();
+                                                                                                                                                        res.json({
+                                                                                                                                                            ok: true,
+                                                                                                                                                            post,
+                                                                                                                                                            message: "Post save correctly",
+                                                                                                                                                        });
+                                                                                                                                                    } catch (err) {
+                                                                                                                                                        return res.status(400).json({
+                                                                                                                                                            ok: false,
+                                                                                                                                                            err,
+                                                                                                                                                        });
+                                                                                                                                                    }*/
 };
 
 postsCtrl.postsByUser = (req, res) => {
     Post.find({ postedBy: req.profile._id })
         .populate("postedBy", "_id name")
-        .select("_id title body created likes") // {},{}
+        .populate("comments", "text created")
+        .populate("comments.postedBy", "_id name")
+        .select("_id title body created likes comments") // {},{}
         .sort("_created")
         .exec((err, posts) => {
             if (err) {
@@ -104,7 +108,9 @@ postsCtrl.postsByUser = (req, res) => {
 postsCtrl.postById = (req, res, next, id) => {
     Post.findById(id)
         .populate("postedBy", "_id name")
-        .select("_id title body created photo likes")
+        .populate("comments", "text created")
+        .populate("comments.postedBy", "_id name")
+        .select("_id title body created photo likes comments")
         .exec((err, post) => {
             if (err || !post) {
                 return res.status(400).json({
@@ -219,6 +225,45 @@ postsCtrl.unlike = (req, res) => {
             res.json(result);
         }
     });
+};
+
+postsCtrl.comment = (req, res) => {
+    let comment = req.body.comment;
+    comment.postedBy = req.body.userId;
+
+    Post.findByIdAndUpdate(
+            req.body.postId, { $push: { comments: comment } }, { new: true }
+        )
+        .populate("comments.postedBy", "_id name")
+        .populate("postedBy", "_id name")
+        .exec((err, result) => {
+            if (err) {
+                return res.status(400).json({
+                    err,
+                });
+            } else {
+                res.json(result);
+            }
+        });
+};
+
+postsCtrl.uncomment = (req, res) => {
+    let comment = req.body.comment;
+
+    Post.findByIdAndUpdate(
+            req.body.postId, { $pull: { comments: { _id: comment._id } } }, { new: true }
+        )
+        .populate("comments.postedBy", "_id name")
+        .populate("postedBy", "_id name")
+        .exec((err, result) => {
+            if (err) {
+                return res.status(400).json({
+                    err,
+                });
+            } else {
+                res.json(result);
+            }
+        });
 };
 
 module.exports = postsCtrl;
