@@ -38,6 +38,7 @@ Packages use
 
 15. [Cors](https://www.npmjs.com/package/cors)
 
+16. [Nodemailer](https://www.npmjs.com/package/nodemailer)
 
 # Documentation
 
