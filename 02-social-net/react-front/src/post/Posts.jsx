@@ -21,7 +21,7 @@ class Posts extends Component {
             error: "Error",
           });
         } else {
-          console.log(data.posts);
+          //console.log(data.posts);
           this.setState({
             posts: data.posts,
           });
