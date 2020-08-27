@@ -42,6 +42,10 @@ const userSchema = new Schema({
         data: String,
         default: "",
     },
+    role: {
+        type: String,
+        default: "subscriber",
+    },
 });
 
 /**

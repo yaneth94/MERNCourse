@@ -28,11 +28,11 @@ usersCtrl.userById = (req, res, next, id) => {
 };
 
 usersCtrl.hasAuthorization = (req, res, next) => {
-    //let sameUser = req.profile && req.auth && req.profile._id == req.auth._id;
-    //let adminUser = req.profile && req.auth && req.auth.role === 'admin';
+    let sameUser = req.profile && req.auth && req.profile._id == req.auth._id;
+    let adminUser = req.profile && req.auth && req.auth.role === "admin";
 
-    // const authorized = sameUser || adminUser;
-    const authorized = req.profile && req.auth && req.profile._id == req.auth._id;
+    const authorized = sameUser || adminUser;
+    // const authorized = req.profile && req.auth && req.profile._id == req.auth._id;
 
     // console.log("req.profile ", req.profile, " req.auth ", req.auth);
     // console.log("SAMEUSER", sameUser, "ADMINUSER", adminUser);
@@ -57,7 +57,7 @@ usersCtrl.getUsers = (req, res) => {
             ok: true,
             users,
         });
-    }).select("name email updated created");
+    }).select("name email updated created role");
 };
 
 usersCtrl.getUser = (req, res) => {

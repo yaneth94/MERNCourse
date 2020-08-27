@@ -16,7 +16,7 @@ postsCtrl.getPosts = async(req, res) => {
             // name property and attributes
             .populate("postedBy", "_id name")
             .populate("comments", "text created")
-            .populate("comments.postedBy", "_id name")
+            .populate("comments.postedBy", "_id name role")
             .select("_id title body created likes") // {},{}
             .sort({ created: -1 });
         res.json({
@@ -66,29 +66,29 @@ postsCtrl.createPost = (req, res, next) => {
         });
     });
     /*
-                                                                                                                                                    // arreglo de propiedades validas
-                                                                                                                                                    let body = _.pick(req.body, ["title", "body"]);
-                                                                                                                                                    const newPost = Post(body);
-                                                                                                                                                    try {
-                                                                                                                                                        let post = await newPost.save();
-                                                                                                                                                        res.json({
-                                                                                                                                                            ok: true,
-                                                                                                                                                            post,
-                                                                                                                                                            message: "Post save correctly",
-                                                                                                                                                        });
-                                                                                                                                                    } catch (err) {
-                                                                                                                                                        return res.status(400).json({
-                                                                                                                                                            ok: false,
-                                                                                                                                                            err,
-                                                                                                                                                        });
-                                                                                                                                                    }*/
+                                                                                                                                                              // arreglo de propiedades validas
+                                                                                                                                                              let body = _.pick(req.body, ["title", "body"]);
+                                                                                                                                                              const newPost = Post(body);
+                                                                                                                                                              try {
+                                                                                                                                                                  let post = await newPost.save();
+                                                                                                                                                                  res.json({
+                                                                                                                                                                      ok: true,
+                                                                                                                                                                      post,
+                                                                                                                                                                      message: "Post save correctly",
+                                                                                                                                                                  });
+                                                                                                                                                              } catch (err) {
+                                                                                                                                                                  return res.status(400).json({
+                                                                                                                                                                      ok: false,
+                                                                                                                                                                      err,
+                                                                                                                                                                  });
+                                                                                                                                                              }*/
 };
 
 postsCtrl.postsByUser = (req, res) => {
     Post.find({ postedBy: req.profile._id })
         .populate("postedBy", "_id name")
         .populate("comments", "text created")
-        .populate("comments.postedBy", "_id name")
+        .populate("comments.postedBy", "_id name role")
         .select("_id title body created likes comments") // {},{}
         .sort("_created")
         .exec((err, posts) => {
@@ -109,7 +109,7 @@ postsCtrl.postById = (req, res, next, id) => {
     Post.findById(id)
         .populate("postedBy", "_id name")
         .populate("comments", "text created")
-        .populate("comments.postedBy", "_id name")
+        .populate("comments.postedBy", "_id name role")
         .select("_id title body created photo likes comments")
         .exec((err, post) => {
             if (err || !post) {
@@ -123,16 +123,16 @@ postsCtrl.postById = (req, res, next, id) => {
         });
 };
 postsCtrl.isPoster = (req, res, next) => {
-    //let sameUser = req.post && req.auth && req.post.postedBy._id == req.auth._id;
-    //let adminUser = req.post && req.auth && req.auth.role === 'admin';
+    let sameUser = req.post && req.auth && req.post.postedBy._id == req.auth._id;
+    let adminUser = req.post && req.auth && req.auth.role === "admin";
 
     //console.log("req.post ", req.post, " req.auth ", req.auth);
     // console.log("SAMEUSER: ", sameUser, " ADMINUSER: ", adminUser);
 
-    //let isPoster = sameUser || adminUser;
+    let isPoster = sameUser || adminUser;
 
-    let isPoster = req.post && req.auth && req.post.postedBy._id == req.auth._id;
-    console.log(isPoster);
+    //let isPoster = req.post && req.auth && req.post.postedBy._id == req.auth._id;
+    //console.log(isPoster);
     if (!isPoster) {
         return res.status(403).json({
             ok: false,
