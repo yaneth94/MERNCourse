@@ -7,10 +7,10 @@ dotenv.config();
 
 exports.sendEmail = (emailData) => {
     const transporter = nodeMailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false,
-        requireTLS: true,
+        host: process.env.HOST_EMAIL,
+        port: process.env.PORT_EMAIL,
+        // secure: false,
+        //requireTLS: true,
         auth: {
             user: process.env.USER_MAIL,
             pass: process.env.PASSWORD_MAIL,
