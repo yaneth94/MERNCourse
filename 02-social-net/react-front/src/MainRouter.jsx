@@ -15,6 +15,7 @@ import SinglePost from './post/SinglePost'
 import EditPost from './post/EditPost'
 import ForgotPassword from './user/ForgotPassword'
 import ResetPassword from './user/ResetPassword'
+import Admin from './admin/Admin'
 
 function MainRouter () {
   return (
@@ -62,6 +63,7 @@ function MainRouter () {
           exact
           component={SinglePost}
         ></PrivateRoute>
+        <PrivateRoute exact path='/admin' component={Admin} />
       </Switch>
     </div>
   )
