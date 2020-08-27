@@ -1,119 +1,124 @@
-import React, { Component } from "react";
-import { Redirect } from "react-router-dom";
-import { signin, authenticate } from "../auth";
+import React, { Component } from 'react'
+import { signin, authenticate } from '../auth'
+import { Link, Redirect } from 'react-router-dom'
 
 class Signin extends Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
     this.state = {
-      email: "",
-      password: "",
-      error: "",
+      email: '',
+      password: '',
+      error: '',
       redirectToRefer: false,
       loading: false,
-      recaptcha: false,
-    };
+      recaptcha: false
+    }
   }
 
   // Another way
-  handleChange = (name) => (event) => {
-    this.setState({ error: "" });
-    this.setState({ [name]: event.target.value });
-  };
+  handleChange = name => event => {
+    this.setState({ error: '' })
+    this.setState({ [name]: event.target.value })
+  }
 
-  handleChangeInput = (e) => {
-    this.setState({ error: "" });
+  handleChangeInput = e => {
+    this.setState({ error: '' })
     this.setState({
-      [e.target.name]: e.target.value,
-    });
-  };
+      [e.target.name]: e.target.value
+    })
+  }
 
-  clickSubmit = (e) => {
-    e.preventDefault();
-    this.setState({ loading: true });
-    const { email, password } = this.state;
+  clickSubmit = e => {
+    e.preventDefault()
+    this.setState({ loading: true })
+    const { email, password } = this.state
     const user = {
       email,
-      password,
-    };
+      password
+    }
     //console.log("user", user);
-    signin(user).then((data) => {
+    signin(user).then(data => {
       if (data.err) {
         this.setState({
           error: data.err,
-          loading: false,
-        });
+          loading: false
+        })
       } else {
         //authenticate
         authenticate(data, () => {
           this.setState({
-            redirectToRefer: true,
-          });
-        });
+            redirectToRefer: true
+          })
+        })
       }
-    });
-  };
-
+    })
+  }
 
   signinForm = (email, password) => {
     return (
       <form>
-        <div className="form-group">
-          <label className="text-muted">Email</label>
+        <div className='form-group'>
+          <label className='text-muted'>Email</label>
           <input
             //onChange={this.handleChange("email")}
             onChange={this.handleChangeInput}
-            type="email"
-            className="form-control"
+            type='email'
+            className='form-control'
             value={email}
-            name="email"
+            name='email'
           />
         </div>
-        <div className="form-group">
-          <label className="text-muted">Password</label>
+        <div className='form-group'>
+          <label className='text-muted'>Password</label>
           <input
             //onChange={this.handleChange("password")}
             onChange={this.handleChangeInput}
-            type="password"
-            className="form-control"
+            type='password'
+            className='form-control'
             value={password}
-            name="password"
+            name='password'
           />
         </div>
         <button
           onClick={this.clickSubmit}
-          className="btn btn-raised btn-primary"
+          className='btn btn-raised btn-primary'
         >
           Submit
         </button>
       </form>
-    );
-  };
-  render() {
-    const { email, password, error, redirectToRefer, loading } = this.state;
+    )
+  }
+  render () {
+    const { email, password, error, redirectToRefer, loading } = this.state
     if (redirectToRefer) {
-      return <Redirect to="/"></Redirect>;
+      return <Redirect to='/'></Redirect>
     }
     return (
-      <div className="container">
-        <h2 className="mt-5 mb-5">Signin</h2>
+      <div className='container'>
+        <h2 className='mt-5 mb-5'>Signin</h2>
         <div
-          className="alert alert-danger"
-          style={{ display: error ? "" : "none" }}
+          className='alert alert-danger'
+          style={{ display: error ? '' : 'none' }}
         >
           {error}
         </div>
         {loading ? (
-          <div className="jumbotron text-center">
+          <div className='jumbotron text-center'>
             <h2>loading</h2>
           </div>
         ) : (
-          ""
+          ''
         )}
         {this.signinForm(email, password)}
+        <p>
+          <Link to='/forgot-password' className='btn btn-raised btn-danger'>
+            {' '}
+            Forgot Password
+          </Link>
+        </p>
       </div>
-    );
+    )
   }
 }
 
-export default Signin;
+export default Signin
