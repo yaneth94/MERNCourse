@@ -29,33 +29,35 @@ class Signin extends Component {
     })
   }
 
-  clickSubmit = e => {
-    e.preventDefault()
+  clickSubmit = event => {
+    event.preventDefault()
     this.setState({ loading: true })
     const { email, password } = this.state
     const user = {
       email,
       password
     }
-    //console.log("user", user);
-    signin(user).then(data => {
-      if (data.err) {
-        this.setState({
-          error: data.err,
-          loading: false
-        })
-      } else {
-        //authenticate
-        authenticate(data, () => {
-          this.setState({
-            redirectToRefer: true
+    // console.log(user);
+    if (this.state.recaptcha) {
+      signin(user).then(data => {
+        if (data.err) {
+          this.setState({ error: data.err, loading: false })
+        } else {
+          // authenticate
+          authenticate(data, () => {
+            this.setState({ redirectToReferer: true })
           })
-        })
-      }
-    })
+        }
+      })
+    } else {
+      this.setState({
+        loading: false,
+        error: 'What day is today? Please write a correct answer!'
+      })
+    }
   }
 
-  signinForm = (email, password) => {
+  signinForm = (email, password, recaptcha) => {
     return (
       <form>
         <div className='form-group'>
@@ -80,6 +82,17 @@ class Signin extends Component {
             name='password'
           />
         </div>
+        <div className='form-group'>
+          <label className='text-muted'>
+            {recaptcha ? 'Thanks. You got it!' : 'What day is today?'}
+          </label>
+
+          <input
+            onChange={this.recaptchaHandler}
+            type='text'
+            className='form-control'
+          />
+        </div>
         <button
           onClick={this.clickSubmit}
           className='btn btn-raised btn-primary'
@@ -89,8 +102,47 @@ class Signin extends Component {
       </form>
     )
   }
+  recaptchaHandler = e => {
+    this.setState({ error: '' })
+    let userDay = e.target.value.toLowerCase()
+    let dayCount
+
+    if (userDay === 'sunday') {
+      dayCount = 0
+    } else if (userDay === 'monday') {
+      dayCount = 1
+    } else if (userDay === 'tuesday') {
+      dayCount = 2
+    } else if (userDay === 'wednesday') {
+      dayCount = 3
+    } else if (userDay === 'thursday') {
+      dayCount = 4
+    } else if (userDay === 'friday') {
+      dayCount = 5
+    } else if (userDay === 'saturday') {
+      dayCount = 6
+    }
+
+    if (dayCount === new Date().getDay()) {
+      this.setState({ recaptcha: true })
+      return true
+    } else {
+      this.setState({
+        recaptcha: false
+      })
+      return false
+    }
+  }
+
   render () {
-    const { email, password, error, redirectToRefer, loading } = this.state
+    const {
+      email,
+      password,
+      error,
+      redirectToRefer,
+      loading,
+      recaptcha
+    } = this.state
     if (redirectToRefer) {
       return <Redirect to='/'></Redirect>
     }
@@ -113,7 +165,7 @@ class Signin extends Component {
         ) : (
           ''
         )}
-        {this.signinForm(email, password)}
+        {this.signinForm(email, password, recaptcha)}
         <p>
           <Link to='/forgot-password' className='btn btn-raised btn-danger'>
             {' '}
